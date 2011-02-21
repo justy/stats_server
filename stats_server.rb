@@ -49,9 +49,9 @@ get '/' do
   @target_dir = params[:target_dir]
   @target_dir = "~/fun" if @target_dir.nil?
 
-  puts "Target dir:" + @target_dir
-  @target_dir = "'" + @target_dir + "'"
-  puts "Target dir:" + @target_dir
+  #puts "Target dir:" + @target_dir
+  #@target_dir = "'" + @target_dir + "'"
+  #puts "Target dir:" + @target_dir
 
   if stat_type == "top"
 
@@ -71,7 +71,7 @@ get '/' do
       @data = arrayOfData(2,new_stats)
       @labels = arrayOfLabels(1,new_stats)
       #@links = arrayOfLinks(@labels,"?stat_type=top&sort_key=cpu")
-      erb :stats_server
+      #erb :stats_server
     end
 
   end
@@ -84,11 +84,12 @@ get '/' do
     #puts "Result"
     #puts `echo $?`
     @data = arrayOfData(0,stats)
+    @data.delete_at(@data.count-1)
     @labels = arrayOfLabels(1,stats)
     #puts "There are " + @labels.count.to_s + " labels"
     @links = arrayOfLinks(@labels,"?stat_type=du")
 
-    erb :wtf #:stats_server
+    #erb :stats_server
 
   end
 
@@ -108,7 +109,7 @@ get '/' do
     @data = arrayOfData(3,new_stats)
     @labels = arrayOfLabels(0,new_stats)
     puts "There are " + @labels.count.to_s + " labels"
-    erb :stats_server
+    #erb :stats_server
   end
 
   erb :stats_server
