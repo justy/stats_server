@@ -49,9 +49,13 @@ get '/' do
   @target_dir = params[:target_dir]
   @target_dir = "~/fun" if @target_dir.nil?
 
-  puts "Rendering Stat Type: " + stat_type + " with sort key: " + sort_key
+  puts "Target dir:" + @target_dir
+  @target_dir = "'" + @target_dir + "'"
+  puts "Target dir:" + @target_dir
 
   if stat_type == "top"
+
+    puts "Rendering Stat Type: " + stat_type + " with sort key: " + sort_key
 
     if sort_key == "cpu"
       stats = `top -l 1 -o cpu`
@@ -60,10 +64,10 @@ get '/' do
       tops = stats.split("\n")
       tops.count.times do |i|
         if i > 12
-          new_stats << tops[i] + " "
+          new_stats << tops[i] + "\n"
         end
       end
-      #puts stats
+      #puts new_stats
       @data = arrayOfData(2,new_stats)
       @labels = arrayOfLabels(1,new_stats)
       #@links = arrayOfLinks(@labels,"?stat_type=top&sort_key=cpu")
@@ -72,35 +76,42 @@ get '/' do
 
   end
 
-
   if stat_type == "du"
 
-      stats = `du -d 1 #{@target_dir}`
-      #puts "Result"
-      #puts `echo $?`
-      @data = arrayOfData(0,stats)
-      @labels = arrayOfLabels(1,stats)
-      puts "There are " + @labels.count.to_s + " labels"
-      @links = arrayOfLinks(@labels,"?stat_type=du")
-      erb :stats_server
+    puts "Rendering Stat Type: " + stat_type
+
+    stats = `du -d 1 #{@target_dir}`
+    #puts "Result"
+    #puts `echo $?`
+    @data = arrayOfData(0,stats)
+    @labels = arrayOfLabels(1,stats)
+    #puts "There are " + @labels.count.to_s + " labels"
+    @links = arrayOfLinks(@labels,"?stat_type=du")
+
+    erb :wtf #:stats_server
+
   end
 
-end
+  if stat_type == "df"
 
-def arrayOfLabels column, raw_text
-
-  tmp = Array.new
-  lines = raw_text.split("\n")
-
-  lines.each do |line|
-    #puts line
-    words = line.split(" ")
-    #puts words
-    #puts words[column]
-    tmp << "\"" + (words[column].gsub("'","\\\'") + "\",")  if !words[column].nil?
+    stats = `df`
+    # Strip the first line
+    new_stats = ""
+    frees = stats.split("\n")
+    frees.count.times do |i|
+      if i > 0
+        new_stats << frees[i] + "\n"
+      end
+    end
+    #puts "Result"
+    #puts `echo $?`
+    @data = arrayOfData(3,new_stats)
+    @labels = arrayOfLabels(0,new_stats)
+    puts "There are " + @labels.count.to_s + " labels"
+    erb :stats_server
   end
 
-  tmp
+  erb :stats_server
 
 end
 
@@ -111,17 +122,37 @@ def arrayOfData column, raw_text
 
   tmp = Array.new
   lines = raw_text.split("\n")
-  puts "There are " + lines.count.to_s + " data"
+  puts "arrayOfData: There are " + lines.count.to_s + " data"
   lines.each do |line|
     #puts line
     words = line.split(" ")
     #puts words
-    #puts words[column]
+    puts words[column]
     tmp << (words[column] + ",") if !words[column].nil?
   end
 
- tmp
+  tmp
+end
 
+
+def arrayOfLabels column, raw_text
+
+  tmp = Array.new
+  lines = raw_text.split("\n")
+
+  lines.each do |line|
+    #puts line
+    words = line.split(" ") #.delete_at(1)
+    words.delete_at(0)
+    #puts words
+    #puts words[column]
+    labl = words.join(" ")
+    #tmp << "\"" + (words[column].gsub("'","\\\'") + "\",")  if !words[column].nil?
+    #tmp << "\"" + (labl.gsub("'","\\\'") + "\",")  if !words[column].nil?
+    tmp << "\"" + labl.gsub("'","\\\'") + "\","
+  end
+
+  tmp
 end
 
 
@@ -133,9 +164,9 @@ def arrayOfLinks array_of_paths, params
   #puts "Count: " +  array_of_paths.count.to_s
   array_of_paths.each do |path|
 
-    #puts path
+    puts path
 
-    this_link = "\"http://localhost:4567" + params + "&target_dir=" + path.gsub("\"","").gsub(",","") + "\","
+    this_link = "\"http://localhost:4567" + params + "&target_dir=" + path.gsub("\"","").gsub(",","").gsub(" ","%20") + "\","
     tmp << this_link
 
   end
