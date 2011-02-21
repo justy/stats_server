@@ -55,10 +55,18 @@ get '/' do
 
     if sort_key == "cpu"
       stats = `top -l 1 -o cpu`
+      #Strip the first 13 lines
+      new_stats = ""
+      tops = stats.split("\n")
+      tops.count.times do |i|
+        if i > 12
+          new_stats << tops[i] + " "
+        end
+      end
       #puts stats
-      @data = arrayOfCells(3,stats)
-      @labels = arrayOfCells(2,stats)
-      @links = arrayOfLinks(stats)
+      @data = arrayOfData(2,new_stats)
+      @labels = arrayOfLabels(1,new_stats)
+      #@links = arrayOfLinks(@labels,"?stat_type=top&sort_key=cpu")
       erb :stats_server
     end
 
@@ -67,10 +75,13 @@ get '/' do
 
   if stat_type == "du"
 
-      stats = `du #{@target_dir}`
-      #puts stats
+      stats = `du -d 1 #{@target_dir}`
+      #puts "Result"
+      #puts `echo $?`
       @data = arrayOfData(0,stats)
       @labels = arrayOfLabels(1,stats)
+      puts "There are " + @labels.count.to_s + " labels"
+      @links = arrayOfLinks(@labels,"?stat_type=du")
       erb :stats_server
   end
 
@@ -85,7 +96,7 @@ def arrayOfLabels column, raw_text
     #puts line
     words = line.split(" ")
     #puts words
-    puts words[column]
+    #puts words[column]
     tmp << "\"" + (words[column].gsub("'","\\\'") + "\",")  if !words[column].nil?
   end
 
@@ -100,12 +111,12 @@ def arrayOfData column, raw_text
 
   tmp = Array.new
   lines = raw_text.split("\n")
-
+  puts "There are " + lines.count.to_s + " data"
   lines.each do |line|
     #puts line
     words = line.split(" ")
     #puts words
-    puts words[column]
+    #puts words[column]
     tmp << (words[column] + ",") if !words[column].nil?
   end
 
@@ -116,11 +127,18 @@ end
 
 def arrayOfLinks array_of_paths, params
 
+  #puts array_of_paths
   tmp = Array.new
+
+  #puts "Count: " +  array_of_paths.count.to_s
   array_of_paths.each do |path|
 
-    this_link = params + "&target_dir=" + path
+    #puts path
+
+    this_link = "\"http://localhost:4567" + params + "&target_dir=" + path.gsub("\"","").gsub(",","") + "\","
+    tmp << this_link
 
   end
 
+  tmp
 end

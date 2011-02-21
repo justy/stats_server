@@ -16,15 +16,16 @@
                 var r = Raphael("holder");
                 r.g.txtattr.font = "12px 'Fontin Sans', Fontin-Sans, sans-serif";
 
-                r.g.text(320, 100, "<%= @target_dir %>").attr({"font-size": 20});
+                r.g.text(320, 50, "Disk usage for <%= @target_dir %>").attr({"font-size": 20});
                 var dataArray = eval("[<%= @data %>]");
                 var labelsArray = eval('[<%= @labels %>]');
-                var pie = r.g.piechart(320, 240, 100,
+                var linksArray = eval('[<%= @links %>]')
+                var pie = r.g.piechart(120, 200, 100,
                   dataArray,
                   {
                     legend: labelsArray,
-                    legendpos: "west",
-                    href: ["http://raphaeljs.com", "http://g.raphaeljs.com"]
+                    legendpos: "east",
+                    href: linksArray
                     }
                     );
 
@@ -47,13 +48,10 @@
             };
         </script>
     </head>
-    <body class="raphael" id="g.raphael.dmitry.baranovskiy.com">
+    <body class="raphael" id="foo">
         <div id="holder"></div>
         <p>
-            Pie chart with legend, hyperlinks on two first sectors and hover effect.
-        </p>
-        <p>
-            Graph of summat
+           Click on a segment to show disk usage for that segment.
         </p>
     </body>
 </html>
