@@ -1,0 +1,59 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+    <head>
+        <title><%= @target_dir %> Dynamic Pie Chart</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="author" content="Justy">
+        <meta name="description" content="Charting JavaScript Library">
+        <link rel="stylesheet" href="demo.css" type="text/css" media="screen" charset="utf-8">
+        <script src="/javascript/raphael/raphael.js" type="text/javascript" charset="utf-8"></script>
+        <script src="/javascript/g.raphael/g.raphael.js" type="text/javascript" charset="utf-8"></script>
+        <script src="/javascript/g.raphael/g.pie.js" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript" charset="utf-8">
+            window.onload = function () {
+                var r = Raphael("holder");
+                r.g.txtattr.font = "12px 'Fontin Sans', Fontin-Sans, sans-serif";
+
+                r.g.text(320, 100, "<%= @target_dir %>").attr({"font-size": 20});
+                var dataArray = eval("[<%= @data %>]");
+                var labelsArray = eval('[<%= @labels %>]');
+                var pie = r.g.piechart(320, 240, 100,
+                  dataArray,
+                  {
+                    legend: labelsArray,
+                    legendpos: "west",
+                    href: ["http://raphaeljs.com", "http://g.raphaeljs.com"]
+                    }
+                    );
+
+                pie.hover(function () {
+                    this.sector.stop();
+                    this.sector.scale(1.1, 1.1, this.cx, this.cy);
+                    if (this.label) {
+                        this.label[0].stop();
+                        this.label[0].scale(1.5);
+                        this.label[1].attr({"font-weight": 800});
+                    }
+                }, function () {
+                    this.sector.animate({scale: [1, 1, this.cx, this.cy]}, 500, "bounce");
+                    if (this.label) {
+                        this.label[0].animate({scale: 1}, 500, "bounce");
+                        this.label[1].attr({"font-weight": 400});
+                    }
+                });
+
+            };
+        </script>
+    </head>
+    <body class="raphael" id="g.raphael.dmitry.baranovskiy.com">
+        <div id="holder"></div>
+        <p>
+            Pie chart with legend, hyperlinks on two first sectors and hover effect.
+        </p>
+        <p>
+            Graph of summat
+        </p>
+    </body>
+</html>

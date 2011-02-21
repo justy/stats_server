@@ -1,0 +1,4 @@
+2011/02/21 15:46:15 [error] 751#0: *4 directory index of "/Users/justy/fun/stats_server/public/" is forbidden, client: 127.0.0.1, server: _, request: "GET / HTTP/1.1", host: "localhost:3000"
+2011/02/21 15:46:20 [error] 751#0: *4 directory index of "/Users/justy/fun/stats_server/public/" is forbidden, client: 127.0.0.1, server: _, request: "GET / HTTP/1.1", host: "localhost:3000"
+2011/02/21 15:47:35 [error] 804#0: *4 directory index of "/Users/justy/fun/stats_server/public/" is forbidden, client: 127.0.0.1, server: _, request: "GET / HTTP/1.1", host: "localhost:3000"
+2011/02/21 15:47:38 [error] 804#0: *4 open() "/Users/justy/fun/stats_server/public/demo" failed (2: No such file or directory), client: 127.0.0.1, server: _, request: "GET /demo HTTP/1.1", host: "localhost:3000"
